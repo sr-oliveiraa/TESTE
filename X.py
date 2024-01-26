@@ -2,6 +2,9 @@ import requests
 from bs4 import BeautifulSoup
 from scapy.all import sniff, IP
 import jsbeautifier
+import re
+import csv
+import json
 
 def obter_codigo_fonte(url):
     try:
@@ -60,31 +63,6 @@ def identificar_tecnologias(soup):
 
     return tecnologias
 
-# Exemplos de uso:
-
-# Obtém e exibe o código fonte de uma URL
-url_alvo = 'https://exemplo.com'
-codigo_fonte = obter_codigo_fonte(url_alvo)
-if codigo_fonte:
-    print(codigo_fonte)
-
-# Captura e processa pacotes da rede
-capturar_e_processar_pacotes(qtd_pacotes=5)
-
-# Descompila código JavaScript minificado
-codigo_minificado = "function hello(){console.log('Hello, World!');}"
-codigo_descompilado = descompilar_javascript(codigo_minificado)
-if codigo_descompilado:
-    print(codigo_descompilado)
-
-# Reconhecimento de tecnologia em uma página web
-reconhecimento_tecnologia(url_alvo)
-
-
-
-from bs4 import BeautifulSoup
-import requests
-
 def analise_elementos_pagina(url):
     try:
         resposta = requests.get(url)
@@ -119,14 +97,6 @@ def analise_elementos_pagina(url):
 
     except requests.exceptions.RequestException as err:
         print(f"Erro na requisição HTTP: {err}")
-
-# Exemplo de uso:
-url_alvo = 'https://exemplo.com'
-analise_elementos_pagina(url_alvo)
-
-
-from bs4 import BeautifulSoup
-import requests
 
 def reconhecimento_frameworks_front_end(url):
     try:
@@ -163,14 +133,6 @@ def reconhecimento_frameworks_front_end(url):
     except requests.exceptions.RequestException as err:
         print(f"Erro na requisição HTTP: {err}")
 
-# Exemplo de uso:
-url_alvo = 'https://exemplo.com'
-reconhecimento_frameworks_front_end(url_alvo)
-
-
-import re
-import requests
-
 def detectar_vulnerabilidades_seguranca(url):
     try:
         resposta = requests.get(url)
@@ -202,13 +164,6 @@ def detectar_vulnerabilidades_seguranca(url):
     except requests.exceptions.RequestException as err:
         print(f"Erro na requisição HTTP: {err}")
 
-# Exemplo de uso:
-url_alvo = 'https://exemplo.com'
-detectar_vulnerabilidades_seguranca(url_alvo)
-
-
-from scapy.all import sniff, IP
-
 def monitorar_trafego_rede(tempo_monitoramento=10):
     pacotes_capturados = []
 
@@ -230,14 +185,6 @@ def monitorar_trafego_rede(tempo_monitoramento=10):
     print(f"{'='*20} Pacotes Capturados {'='*20}")
     for idx, pacote_info in enumerate(pacotes_capturados, 1):
         print(f"Pacote {idx}: {pacote_info}")
-
-# Exemplo de uso:
-tempo_monitoramento = 10  # Tempo em segundos
-monitorar_trafego_rede(tempo_monitoramento)
-
-
-import csv
-import json
 
 def exportar_resultados(resultados, formato='csv'):
     """
@@ -278,11 +225,28 @@ def exportar_resultados(resultados, formato='csv'):
     except Exception as e:
         print(f"Erro durante a exportação: {e}")
 
-# Exemplo de uso:
+# Exemplos de uso:
+url_alvo = 'https://exemplo.com'
+codigo_fonte = obter_codigo_fonte(url_alvo)
+if codigo_fonte:
+    print(codigo_fonte)
+
+capturar_e_processar_pacotes(qtd_pacotes=5)
+
+codigo_minificado = "function hello(){console.log('Hello, World!');}"
+codigo_descompilado = descompilar_javascript(codigo_minificado)
+if codigo_descompilado:
+    print(codigo_descompilado)
+
+reconhecimento_tecnologia(url_alvo)
+analise_elementos_pagina(url_alvo)
+reconhecimento_frameworks_front_end(url_alvo)
+detectar_vulnerabilidades_seguranca(url_alvo)
+monitorar_trafego_rede(tempo_monitoramento=10)
+
 resultados_exemplo = [{'Origem': '192.168.0.1', 'Destino': '8.8.8.8', 'Protocolo': 6},
                       {'Origem': '10.0.0.1', 'Destino': '8.8.4.4', 'Protocolo': 17}]
 
 exportar_resultados(resultados_exemplo, formato='csv')
 exportar_resultados(resultados_exemplo, formato='json')
 exportar_resultados(resultados_exemplo, formato='html')
-
