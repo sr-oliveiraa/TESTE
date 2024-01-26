@@ -8,30 +8,39 @@ import json
 
 def obter_codigo_fonte(url):
     try:
-        resposta = requests.get(url)
+        print(f"Iniciando obter_codigo_fonte para URL: {url}")
+        resposta = requests.get(url, timeout=10)
         resposta.raise_for_status()
         return resposta.text
     except requests.exceptions.RequestException as err:
         print(f"Erro na requisição HTTP: {err}")
         return None
+    finally:
+        print("obter_codigo_fonte concluído.")
 
 def capturar_e_processar_pacotes(qtd_pacotes=10):
     def processar_pacote(pacote):
         if IP in pacote:
             print(f"IP Origem: {pacote[IP].src}, IP Destino: {pacote[IP].dst}")
 
+    print(f"Iniciando capturar_e_processar_pacotes (capturando {qtd_pacotes} pacotes)")
     sniff(prn=processar_pacote, count=qtd_pacotes)
+    print("capturar_e_processar_pacotes concluído.")
 
 def descompilar_javascript(codigo_minificado):
     try:
+        print("Iniciando descompilar_javascript")
         return jsbeautifier.beautify(codigo_minificado)
     except Exception as e:
         print(f"Erro na descompilação do JavaScript: {e}")
         return None
+    finally:
+        print("descompilar_javascript concluído.")
 
 def reconhecimento_tecnologia(url):
     try:
-        resposta = requests.get(url)
+        print(f"Iniciando reconhecimento_tecnologia para URL: {url}")
+        resposta = requests.get(url, timeout=10)
         resposta.raise_for_status()
 
         cabecalhos = resposta.headers
@@ -48,9 +57,10 @@ def reconhecimento_tecnologia(url):
                 print(tecnologia)
         else:
             print("Nenhuma tecnologia identificada.")
-
     except requests.exceptions.RequestException as err:
         print(f"Erro na requisição HTTP: {err}")
+    finally:
+        print("reconhecimento_tecnologia concluído.")
 
 def identificar_tecnologias(soup):
     tecnologias = []
@@ -65,7 +75,8 @@ def identificar_tecnologias(soup):
 
 def analise_elementos_pagina(url):
     try:
-        resposta = requests.get(url)
+        print(f"Iniciando analise_elementos_pagina para URL: {url}")
+        resposta = requests.get(url, timeout=10)
         resposta.raise_for_status()
         codigo_fonte = resposta.text
 
@@ -97,10 +108,13 @@ def analise_elementos_pagina(url):
 
     except requests.exceptions.RequestException as err:
         print(f"Erro na requisição HTTP: {err}")
+    finally:
+        print("analise_elementos_pagina concluído.")
 
 def reconhecimento_frameworks_front_end(url):
     try:
-        resposta = requests.get(url)
+        print(f"Iniciando reconhecimento_frameworks_front_end para URL: {url}")
+        resposta = requests.get(url, timeout=10)
         resposta.raise_for_status()
         codigo_fonte = resposta.text
 
@@ -129,13 +143,15 @@ def reconhecimento_frameworks_front_end(url):
                 print(f" - {framework}")
         else:
             print("Nenhum framework front-end identificado.")
-
     except requests.exceptions.RequestException as err:
         print(f"Erro na requisição HTTP: {err}")
+    finally:
+        print("reconhecimento_frameworks_front_end concluído.")
 
 def detectar_vulnerabilidades_seguranca(url):
     try:
-        resposta = requests.get(url)
+        print(f"Iniciando detectar_vulnerabilidades_seguranca para URL: {url}")
+        resposta = requests.get(url, timeout=10)
         resposta.raise_for_status()
         codigo_fonte = resposta.text
 
@@ -160,9 +176,10 @@ def detectar_vulnerabilidades_seguranca(url):
 
         if not resultados_injecao_sql and not resultados_xss:
             print("Nenhuma vulnerabilidade de segurança detectada.")
-
     except requests.exceptions.RequestException as err:
         print(f"Erro na requisição HTTP: {err}")
+    finally:
+        print("detectar_vulnerabilidades_seguranca concluído.")
 
 def monitorar_trafego_rede(tempo_monitoramento=10):
     pacotes_capturados = []
@@ -178,6 +195,7 @@ def monitorar_trafego_rede(tempo_monitoramento=10):
             }
             pacotes_capturados.append(pacote_info)
 
+    print(f"Iniciando monitorar_trafego_rede (monitorando por {tempo_monitoramento} segundos)")
     # Captura pacotes durante o tempo especificado
     sniff(prn=processar_pacote, timeout=tempo_monitoramento)
 
@@ -185,6 +203,7 @@ def monitorar_trafego_rede(tempo_monitoramento=10):
     print(f"{'='*20} Pacotes Capturados {'='*20}")
     for idx, pacote_info in enumerate(pacotes_capturados, 1):
         print(f"Pacote {idx}: {pacote_info}")
+    print("monitorar_trafego_rede concluído.")
 
 def exportar_resultados(resultados, formato='csv'):
     """
@@ -199,6 +218,7 @@ def exportar_resultados(resultados, formato='csv'):
         print(f"Formato '{formato}' não suportado para exportação.")
         return
 
+    print(f"Iniciando exportar_resultados no formato {formato}")
     nome_arquivo = f'resultados_exportados.{formato}'
 
     try:
@@ -224,29 +244,11 @@ def exportar_resultados(resultados, formato='csv'):
 
     except Exception as e:
         print(f"Erro durante a exportação: {e}")
+    finally:
+        print("exportar_resultados concluído.")
 
 # Exemplos de uso:
-url_alvo = 'https://exemplo.com'
-codigo_fonte = obter_codigo_fonte(url_alvo)
-if codigo_fonte:
-    print(codigo_fonte)
-
-capturar_e_processar_pacotes(qtd_pacotes=5)
-
-codigo_minificado = "function hello(){console.log('Hello, World!');}"
-codigo_descompilado = descompilar_javascript(codigo_minificado)
-if codigo_descompilado:
-    print(codigo_descompilado)
-
-reconhecimento_tecnologia(url_alvo)
-analise_elementos_pagina(url_alvo)
-reconhecimento_frameworks_front_end(url_alvo)
-detectar_vulnerabilidades_seguranca(url_alvo)
-monitorar_trafego_rede(tempo_monitoramento=10)
-
-resultados_exemplo = [{'Origem': '192.168.0.1', 'Destino': '8.8.8.8', 'Protocolo': 6},
-                      {'Origem': '10.0.0.1', 'Destino': '8.8.4.4', 'Protocolo': 17}]
-
-exportar_resultados(resultados_exemplo, formato='csv')
-exportar_resultados(resultados_exemplo, formato='json')
-exportar_resultados(resultados_exemplo, formato='html')
+url_alvo = 'https://callphone-saneago.bashtechnology.com.br/'
+obter_codigo_fonte(url_alvo)
+capturar_e_processar_pacotes()
+# Adicione chamadas para outras funções aqui, conforme necessário
