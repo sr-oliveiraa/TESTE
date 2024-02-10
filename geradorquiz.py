@@ -16,7 +16,100 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>Gerador de Quiz</title>
                 <style>
-                    /* Seu CSS permanece o mesmo */
+                    body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        #quiz-container {
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease;
+        }
+
+        #question {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        #options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option {
+            background-color: #3498db;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .option:hover {
+            background-color: #2980b9;
+            transform: scale(1.05);
+        }
+
+        #result {
+            font-size: 20px;
+            margin-top: 20px;
+            color: #3498db;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        #result.correct {
+            color: #2ecc71;
+        }
+
+        #result.incorrect {
+            color: #e74c3c;
+        }
+
+        .option.correct {
+            background-color: #2ecc71;
+        }
+
+        .option.incorrect {
+            background-color: #e74c3c;
+        }
+
+        #next-btn {
+            background-color: #3498db;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            display: none; /* Inicialmente oculto até que o usuário escolha uma opção incorreta ou correta */
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        #next-btn:hover {
+            background-color: #2980b9;
+            transform: scale(1.05);
+        }
+
+        #progress {
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        #progress span {
+            font-weight: bold;
+            color: #3498db;
+        }
                 </style>
             </head>
             <body>
