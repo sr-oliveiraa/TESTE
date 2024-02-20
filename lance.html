@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LANCE</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .chat-container {
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        #chat-window {
+            height: 300px;
+            overflow-y: scroll;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        #chat-messages {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .message {
+            margin-bottom: 5px;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #f2f2f2;
+        }
+
+        .my-message {
+            background-color: #007bff;
+            color: white;
+            align-self: flex-end;
+        }
+
+        #message-input {
+            width: calc(100% - 75px);
+            padding: 10px;
+            margin-right: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        #send-button {
+            padding: 10px 20px;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div id="chat-window" onscroll="handleScroll()">
+            <ul id="chat-messages"></ul>
+        </div>
+        <input type="text" id="message-input" placeholder="Digite algo aqui" onkeypress="handleKeyPress(event)">
+        <button id="send-button" onclick="sendMessage()">Enviar</button>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-database.js"></script>
+    <script>
+        // Configure Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAe1yisDt5YIrmJr1che73nFGLEy1ff-_A",
+            authDomain: "lance-85983.firebaseapp.com",
+            projectId: "lance-85983",
+            storageBucket: "lance-85983.appspot.com",
+            messagingSenderId: "730474263884",
+            appId: "1:730474263884:web:3b6e2fbdc528ce48830be9",
+            measurementId: "G-LM4Z6G55DW"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        const chatMessages = document.getElementById('chat-messages');
+        const messageInput = document.getElementById('message-input');
+
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            if (message !== '') {
+                db.ref('messages').push().set({
+                    message: message,
+                    sender: 'User' // You can change this to the actual sender's name or ID
+                });
+                messageInput.value = '';
+            }
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        db.ref('messages').on('child_added', (snapshot) => {
+            const data = snapshot.val();
+            displayMessage(data);
+        });
+
+        function displayMessage(data) {
+            const { message, sender } = data;
+            const li = document.createElement('li');
+            li.textContent = `${sender}: ${message}`;
+            li.classList.add('message');
+            if (sender === 'User') {
+                li.classList.add('my-message');
+            }
+            chatMessages.appendChild(li);
+            scrollToBottom();
+        }
+
+        function scrollToBottom() {
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function handleScroll() {
+            if (chatMessages.scrollTop < chatMessages.scrollHeight - chatMessages.clientHeight) {
+                chatMessages.scrollTop = chatMessages.scrollHeight - chatMessages.clientHeight;
+            }
+        }
+    </script>
+</body>
+</html>
