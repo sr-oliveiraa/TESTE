@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -61,80 +61,167 @@
             border: none;
             cursor: pointer;
         }
+
+        /* Emojis */
+        .emoji-button {
+            cursor: pointer;
+        }
+
+        /* Listagem de Usuários Online */
+        #user-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        #user-list li {
+            margin-bottom: 5px;
+        }
+
+        /* Personalização do Tema */
+        #theme-selector {
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
     <div class="chat-container">
-        <div id="chat-window" onscroll="handleScroll()">
+        <!-- Formulário para entrada de nome e código -->
+        <input type="text" id="name-input" placeholder="Seu Nome">
+        <input type="text" id="code-input" placeholder="Código de Acesso">
+        <button id="join-button" onclick="joinChat()">Entrar no Chat</button>
+
+        <!-- Listagem de Usuários Online -->
+        <div>
+            <h3>Usuários Online</h3>
+            <ul id="user-list"></ul>
+        </div>
+
+        <!-- Personalização do Tema -->
+        <div>
+            <h3>Tema</h3>
+            <select id="theme-selector" onchange="changeTheme()">
+                <option value="light">Claro</option>
+                <option value="dark">Escuro</option>
+            </select>
+        </div>
+
+        <!-- Janela de Chat -->
+        <div id="chat-window" style="display: none;">
             <ul id="chat-messages"></ul>
         </div>
-        <input type="text" id="message-input" placeholder="Digite algo aqui" onkeypress="handleKeyPress(event)">
-        <button id="send-button" onclick="sendMessage()">Enviar</button>
+        <input type="text" id="message-input" placeholder="Digite algo aqui" style="display: none;">
+        <button id="send-button" onclick="showEmojiPanel()" style="display: none;">Emoji</button>
+        <div id="emoji-panel" style="display: none;">
+            <span class="emoji-button" onclick="insertEmoji('😊')">😊</span>
+            <span class="emoji-button" onclick="insertEmoji('😂')">😂</span>
+            <span class="emoji-button" onclick="insertEmoji('😍')">😍</span>
+            <!-- Adicione mais emojis conforme desejado -->
+        </div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-database.js"></script>
     <script>
-        // Configure Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyAe1yisDt5YIrmJr1che73nFGLEy1ff-_A",
-            authDomain: "lance-85983.firebaseapp.com",
-            projectId: "lance-85983",
-            storageBucket: "lance-85983.appspot.com",
-            messagingSenderId: "730474263884",
-            appId: "1:730474263884:web:3b6e2fbdc528ce48830be9",
-            measurementId: "G-LM4Z6G55DW"
-        };
-
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-
         const chatMessages = document.getElementById('chat-messages');
         const messageInput = document.getElementById('message-input');
+        const nameInput = document.getElementById('name-input');
+        const codeInput = document.getElementById('code-input');
+        const joinButton = document.getElementById('join-button');
+        const chatWindow = document.getElementById('chat-window');
+        const emojiPanel = document.getElementById('emoji-panel');
+        const userList = document.getElementById('user-list');
+        const themeSelector = document.getElementById('theme-selector');
 
+        let userName = '';
+        let theme = 'light'; // Tema padrão
+        let usersOnline = []; // Lista de usuários online
+
+        // Função para entrar no chat
+        function joinChat() {
+            const name = nameInput.value.trim();
+            const code = codeInput.value.trim();
+            if (name !== '' && code === '1229') { // Substitua 'SEU_CODIGO' pelo código desejado
+                userName = name;
+                nameInput.style.display = 'none';
+                codeInput.style.display = 'none';
+                joinButton.style.display = 'none';
+                chatWindow.style.display = 'block';
+                messageInput.style.display = 'block';
+                document.getElementById('send-button').style.display = 'block';
+                document.getElementById('send-button').innerText = 'Enviar';
+                document.getElementById('send-button').setAttribute('onclick', 'sendMessage()');
+                document.getElementById('send-button').style.display = 'inline-block';
+                document.getElementById('send-button').innerText = 'Enviar';
+                document.getElementById('send-button').setAttribute('onclick', 'sendMessage()');
+                document.getElementById('emoji-panel').style.display = 'none';
+                addUserOnline(userName); // Adiciona usuário à lista de usuários online
+                populateUserList(); // Atualiza lista de usuários online
+            } else {
+                alert('Código inválido ou nome não inserido.');
+            }
+        }
+
+        // Função para enviar mensagem
         function sendMessage() {
             const message = messageInput.value.trim();
             if (message !== '') {
-                db.ref('messages').push().set({
-                    message: message,
-                    sender: 'User' // You can change this to the actual sender's name or ID
-                });
+                displayMessage(userName, message);
                 messageInput.value = '';
+                scrollToBottom();
             }
         }
 
-        function handleKeyPress(event) {
-            if (event.key === 'Enter') {
-                sendMessage();
-            }
-        }
-
-        db.ref('messages').on('child_added', (snapshot) => {
-            const data = snapshot.val();
-            displayMessage(data);
-        });
-
-        function displayMessage(data) {
-            const { message, sender } = data;
+        // Função para exibir mensagem na tela
+        function displayMessage(sender, message) {
             const li = document.createElement('li');
             li.textContent = `${sender}: ${message}`;
             li.classList.add('message');
-            if (sender === 'User') {
+            if (sender === userName) {
                 li.classList.add('my-message');
             }
             chatMessages.appendChild(li);
-            scrollToBottom();
         }
 
+        // Função para rolar para o final da janela de chat
         function scrollToBottom() {
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
-        function handleScroll() {
-            if (chatMessages.scrollTop < chatMessages.scrollHeight - chatMessages.clientHeight) {
-                chatMessages.scrollTop = chatMessages.scrollHeight - chatMessages.clientHeight;
+        // Função para adicionar usuário à lista de usuários online
+        function addUserOnline(user) {
+            if (!usersOnline.includes(user)) {
+                usersOnline.push(user);
             }
+        }
+
+        // Função para atualizar a lista de usuários online na interface
+        function populateUserList() {
+            userList.innerHTML = '';
+            usersOnline.forEach(user => {
+                const li = document.createElement('li');
+                li.textContent = user;
+                userList.appendChild(li);
+            });
+        }
+
+        // Função para alterar o tema
+        function changeTheme() {
+            theme = themeSelector.value;
+            document.body.style.backgroundColor = theme === 'dark' ? '#333' : '#fff';
+            document.body.style.color = theme === 'dark' ? '#fff' : '#333';
+        }
+
+        // Função para mostrar o painel de emojis
+        function showEmojiPanel() {
+            if (emojiPanel.style.display === 'none') {
+                emojiPanel.style.display = 'block';
+            } else {
+                emojiPanel.style.display = 'none';
+            }
+        }
+
+        // Função para inserir um emoji no campo de mensagem
+        function insertEmoji(emoji) {
+            messageInput.value += emoji;
+            emojiPanel.style.display = 'none';
         }
     </script>
 </body>
