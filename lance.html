@@ -9,34 +9,45 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
+            background-color: #111;
+            color: #eee; /* Cor padrão do texto */
         }
 
         .chat-container {
             max-width: 500px;
             margin: 50px auto;
             padding: 20px;
-            border: 1px solid #ccc;
+            border: 1px solid #444;
             border-radius: 5px;
+            background-color: #222;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
         }
 
         #chat-window {
             height: 300px;
             overflow-y: scroll;
             margin-bottom: 10px;
-            border: 1px solid #ccc;
+            border: 1px solid #444;
             border-radius: 5px;
         }
 
         #chat-messages {
             list-style-type: none;
             padding: 0;
+            margin: 0;
         }
 
         .message {
-            margin-bottom: 5px;
+            margin-bottom: 10px;
             padding: 10px;
-            border-radius: 5px;
-            background-color: #f2f2f2;
+            border-radius: 10px;
+            background-color: #333;
+            position: relative;
+        }
+
+        .message-text {
+            margin-left: 40px;
+            color: #eee;
         }
 
         .my-message {
@@ -45,117 +56,219 @@
             align-self: flex-end;
         }
 
-        #message-input {
-            width: calc(100% - 75px);
-            padding: 10px;
-            margin-right: 10px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
+        .avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 10px;
+            transform: translateY(-50%);
         }
 
-        #send-button {
+        .message-time {
+            font-size: 12px;
+            color: #888;
+            position: absolute;
+            bottom: 5px;
+            right: 10px;
+        }
+
+        #message-input-container {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        #message-input {
+            flex: 1;
+            padding: 10px;
+            border-radius: 20px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+            outline: none;
+            background-color: #333; /* Fundo branco para garantir visibilidade do texto */
+            color: #eee;
+        }
+
+        .action-button {
             padding: 10px 20px;
-            border-radius: 5px;
+            border-radius: 20px;
             background-color: #007bff;
             color: #fff;
             border: none;
             cursor: pointer;
+            margin-left: 10px;
+            outline: none;
+            transition: background-color 0.3s;
         }
 
-        /* Emojis */
-        .emoji-button {
-            cursor: pointer;
+        .action-button:hover {
+            background-color: #0056b3;
         }
 
         /* Listagem de Usuários Online */
         #user-list {
             list-style-type: none;
             padding: 0;
+            margin-bottom: 10px;
         }
 
         #user-list li {
             margin-bottom: 5px;
+            padding: 5px;
+            border-radius: 5px;
+            background-color: #333;
+            color: #eee;
         }
 
-        /* Personalização do Tema */
-        #theme-selector {
+        /* Barra de Pesquisa */
+        #search-input {
+            width: calc(100% - 20px);
+            padding: 5px;
             margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            background-color: #333;
+            color: #eee;
         }
+
+        /* Notificações */
+        .notification {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            display: none;
+        }
+
+        /* Painel de Emojis */
+        #emoji-panel {
+            position: absolute;
+            bottom: 60px;
+            left: 10px;
+            background-color: #333;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            display: none;
+        }
+
+        .emoji {
+            font-size: 20px;
+            cursor: pointer;
+            margin-right: 5px;
+            color: #eee;
+        }
+        @keyframes shake {
+    0% { transform: translateX(0); }
+    10%, 90% { transform: translateX(-10px); }
+    20%, 80% { transform: translateX(10px); }
+    30%, 50%, 70% { transform: translateX(-10px); }
+    40%, 60% { transform: translateX(10px); }
+    100% { transform: translateX(0); }
+}
+
+.shake-animation {
+    animation: shake 0.5s ease-in-out;
+}
+
     </style>
 </head>
 <body>
     <div class="chat-container">
-        <!-- Formulário para entrada de nome e código -->
+        <!-- Formulário para entrada de nome, avatar e código -->
         <input type="text" id="name-input" placeholder="Seu Nome">
-        <input type="text" id="code-input" placeholder="Código de Acesso">
-        <button id="join-button" onclick="joinChat()">Entrar no Chat</button>
+        <input type="file" id="avatar-input" accept="image/*">
+        <input type="password" id="code-input" placeholder="Código de Acesso">
+        <button id="join-button" class="action-button" onclick="joinChat()">Entrar no Chat</button>
 
         <!-- Listagem de Usuários Online -->
         <div>
-            <h3>Usuários Online</h3>
+            <h3>Online</h3>
             <ul id="user-list"></ul>
         </div>
 
-        <!-- Personalização do Tema -->
-        <div>
-            <h3>Tema</h3>
-            <select id="theme-selector" onchange="changeTheme()">
-                <option value="light">Claro</option>
-                <option value="dark">Escuro</option>
-            </select>
-        </div>
+        <!-- Barra de Pesquisa -->
+        <input type="text" id="search-input" placeholder="Pesquisar mensagens">
 
         <!-- Janela de Chat -->
         <div id="chat-window" style="display: none;">
             <ul id="chat-messages"></ul>
         </div>
-        <input type="text" id="message-input" placeholder="Digite algo aqui" style="display: none;">
-        <button id="send-button" onclick="showEmojiPanel()" style="display: none;">Emoji</button>
-        <div id="emoji-panel" style="display: none;">
-            <span class="emoji-button" onclick="insertEmoji('😊')">😊</span>
-            <span class="emoji-button" onclick="insertEmoji('😂')">😂</span>
-            <span class="emoji-button" onclick="insertEmoji('😍')">😍</span>
-            <!-- Adicione mais emojis conforme desejado -->
+        <div id="message-input-container">
+            <input type="text" id="message-input" placeholder="Digite algo aqui" onkeypress="handleKeyPress(event)" style="display: none;">
+            <button id="emoji-button" class="action-button" onclick="toggleEmojiPanel()">😊</button>
+            <button id="send-button" class="action-button" onclick="sendMessage()" style="display: none;">Enviar</button>
+        </div>
+
+        <!-- Notificações -->
+        <div class="notification" id="notification"></div>
+
+        <!-- Botão para limpar a conversa -->
+        <button id="clear-chat-button" class="action-button" onclick="clearChat()" style="display: none;">Limpar Conversa</button>
+        
+        <!-- Botão de Chamar Atenção -->
+        <button id="attention-button" class="action-button" onclick="sendAttention()" style="display: none;">Dá Moral</button>
+        
+        <!-- Painel de Emojis -->
+        <div id="emoji-panel">
+            <span class="emoji" onclick="addEmoji('😊')">😊</span>
+            <span class="emoji" onclick="addEmoji('😂')">😂</span>
+            <span class="emoji" onclick="addEmoji('😍')">😍</span>
+            <span class="emoji" onclick="addEmoji('👍')">👍</span>
+            <span class="emoji" onclick="addEmoji('👋')">👋</span>
+            <span class="emoji" onclick="addEmoji('🔥')">🔥</span>
+            <span class="emoji" onclick="addEmoji('💯')">💯</span>
+            <span class="emoji" onclick="addEmoji('🎉')">🎉</span>
+            <span class="emoji" onclick="addEmoji('🥳')">🥳</span>
         </div>
     </div>
 
     <script>
+        // Definição das constantes e variáveis
         const chatMessages = document.getElementById('chat-messages');
         const messageInput = document.getElementById('message-input');
         const nameInput = document.getElementById('name-input');
+        const avatarInput = document.getElementById('avatar-input');
         const codeInput = document.getElementById('code-input');
         const joinButton = document.getElementById('join-button');
         const chatWindow = document.getElementById('chat-window');
-        const emojiPanel = document.getElementById('emoji-panel');
+        const sendMessageButton = document.getElementById('send-button');
         const userList = document.getElementById('user-list');
-        const themeSelector = document.getElementById('theme-selector');
-
+        const searchInput = document.getElementById('search-input');
+        const notification = document.getElementById('notification');
+        const attentionButton = document.getElementById('attention-button');
+        const emojiPanel = document.getElementById('emoji-panel');
         let userName = '';
-        let theme = 'light'; // Tema padrão
+        let userAvatar = '';
+        let theme = 'dark'; // Tema escuro
         let usersOnline = []; // Lista de usuários online
 
         // Função para entrar no chat
         function joinChat() {
             const name = nameInput.value.trim();
             const code = codeInput.value.trim();
-            if (name !== '' && code === '1229') { // Substitua 'SEU_CODIGO' pelo código desejado
+            if (name !== '' && avatarInput.files.length > 0 && code === '1229') { 
                 userName = name;
-                nameInput.style.display = 'none';
-                codeInput.style.display = 'none';
-                joinButton.style.display = 'none';
-                chatWindow.style.display = 'block';
-                messageInput.style.display = 'block';
-                document.getElementById('send-button').style.display = 'block';
-                document.getElementById('send-button').innerText = 'Enviar';
-                document.getElementById('send-button').setAttribute('onclick', 'sendMessage()');
-                document.getElementById('send-button').style.display = 'inline-block';
-                document.getElementById('send-button').innerText = 'Enviar';
-                document.getElementById('send-button').setAttribute('onclick', 'sendMessage()');
-                document.getElementById('emoji-panel').style.display = 'none';
-                addUserOnline(userName); // Adiciona usuário à lista de usuários online
-                populateUserList(); // Atualiza lista de usuários online
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    userAvatar = event.target.result;
+                    toggleElementDisplay(nameInput);
+                    toggleElementDisplay(avatarInput);
+                    toggleElementDisplay(codeInput);
+                    toggleElementDisplay(joinButton);
+                    toggleElementDisplay(chatWindow);
+                    toggleElementDisplay(messageInput);
+                    toggleElementDisplay(sendMessageButton);
+                    toggleElementDisplay(attentionButton);
+                    addUserOnline(userName); 
+                    populateUserList(); 
+                };
+                reader.readAsDataURL(avatarInput.files[0]);
             } else {
-                alert('Código inválido ou nome não inserido.');
+                alert('Código inválido ou informações não inseridas corretamente.');
             }
         }
 
@@ -163,21 +276,44 @@
         function sendMessage() {
             const message = messageInput.value.trim();
             if (message !== '') {
-                displayMessage(userName, message);
+                displayMessage(userName, userAvatar, message);
                 messageInput.value = '';
                 scrollToBottom();
             }
         }
 
         // Função para exibir mensagem na tela
-        function displayMessage(sender, message) {
+        function displayMessage(sender, avatar, message) {
             const li = document.createElement('li');
-            li.textContent = `${sender}: ${message}`;
+            const avatarImage = document.createElement('img');
+            avatarImage.src = avatar;
+            avatarImage.alt = 'Avatar';
+            avatarImage.className = 'avatar';
+            li.appendChild(avatarImage);
+            const messageText = document.createElement('div');
+            messageText.textContent = `${sender}: ${message}`;
+            messageText.className = 'message-text';
+            li.appendChild(messageText);
+            const messageTime = document.createElement('div');
+            messageTime.textContent = getCurrentTime();
+            messageTime.className = 'message-time';
+            li.appendChild(messageTime);
             li.classList.add('message');
             if (sender === userName) {
                 li.classList.add('my-message');
             }
             chatMessages.appendChild(li);
+            if (sender !== userName) {
+                showNotification(`${sender} enviou uma mensagem.`);
+            }
+        }
+
+        // Função para obter a hora atual formatada
+        function getCurrentTime() {
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            return `${hours}:${minutes}`;
         }
 
         // Função para rolar para o final da janela de chat
@@ -202,26 +338,57 @@
             });
         }
 
-        // Função para alterar o tema
-        function changeTheme() {
-            theme = themeSelector.value;
-            document.body.style.backgroundColor = theme === 'dark' ? '#333' : '#fff';
-            document.body.style.color = theme === 'dark' ? '#fff' : '#333';
+        // Função para exibir notificação
+        function showNotification(message) {
+            notification.textContent = message;
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000); 
         }
 
-        // Função para mostrar o painel de emojis
-        function showEmojiPanel() {
-            if (emojiPanel.style.display === 'none') {
-                emojiPanel.style.display = 'block';
-            } else {
-                emojiPanel.style.display = 'none';
+        // Função para enviar atenção ao outro usuário
+        function sendAttention() {
+    const chatContainer = document.querySelector('.chat-container');
+    chatContainer.classList.add('shake-animation');
+    setTimeout(() => {
+        chatContainer.classList.remove('shake-animation');
+    }, 1000); // A animação dura 1 segundo (1000 milissegundos)
+}
+
+        // Função para adicionar emoji à mensagem
+        function addEmoji(emoji) {
+            messageInput.value += emoji;
+        }
+
+        // Função para alternar a exibição do painel de emojis
+        function toggleEmojiPanel() {
+            toggleElementDisplay(emojiPanel);
+        }
+
+        // Função para limpar todas as mensagens do chat
+        function clearChat() {
+            chatMessages.innerHTML = '';
+        }
+
+        // Função para lidar com pressionamento de tecla
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                const message = messageInput.value.trim();
+                if (message !== '') {
+                    if (message.startsWith('ops/')) {
+                        chatMessages.innerHTML = '';
+                        alert('Você saiu do chat.');
+                        return;
+                    }
+                    sendMessage();
+                }
             }
         }
 
-        // Função para inserir um emoji no campo de mensagem
-        function insertEmoji(emoji) {
-            messageInput.value += emoji;
-            emojiPanel.style.display = 'none';
+        // Função para alternar a exibição de um elemento
+        function toggleElementDisplay(element) {
+            element.style.display = element.style.display === 'none' ? 'block' : 'none';
         }
     </script>
 </body>
